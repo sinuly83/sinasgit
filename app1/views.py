@@ -41,3 +41,30 @@ def calculator(request):
                     return Response({"error":"send a valid operator"}, status = status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({"error":"num1 and num2 should be integers"}, status = status.HTTP_400_BAD_REQUEST)
+
+
+from .serializers import CalculatorSerializers
+
+@api_view(['POST'])
+def calculator2(request):
+    ser = CalculatorSerializers(data = request.data)
+    if ser.is_valid():
+        num1 = ser.data['num1']
+        num2 = ser.data['num2']
+        opr = ser.data['opr']
+        if opr == "add":
+            return Response({"result":num1+num2},status=status.HTTP_200_OK)
+        elif opr == "sub":
+            return Response({"result":num1-num2},status=status.HTTP_200_OK)
+        elif opr == "mul":
+            return Response({"result":num1*num2},status=status.HTTP_200_OK)
+        elif opr == "div":
+            if num2 != 0:
+                return Response({"result":num1/num2},status=status.HTTP_200_OK)
+            else:
+                return Response({"error":"Division by zero is not allowed"}, status = status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"enter valid opr!"},status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
+    
